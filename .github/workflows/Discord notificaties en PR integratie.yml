@@ -1,0 +1,61 @@
+name: CI-node.js
+
+on:
+    push:
+      branches:
+      - main
+    pull_request:
+      branches:
+      - main
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          repository: PXL-2TIN-DevOps-Resources/calculator-app-finished
+          
+      - name: node.js installatie
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: dependecies installeren
+        run: npm install
+
+      - name: uitvoering unit tests
+        run: npm test
+
+      - name: generatie van een test coverage rapport
+        run: npx jest --coverage
+
+      - name: artifact aanmaken met de test resultaten
+        uses: actions/upload-artifact@v4
+        with:
+          name: test resultaten
+          path: coverage/
+          
+      - name: Discord success
+        if: success()
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: curl -H "Content-Type: application/json" -d '{"content":"Build geslaagd!"}' "$WEBHOOK"
+
+      - name: Discord failure
+        if: failure()
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: curl -H "Content-Type: application/json" -d '{"content":"Build mislukt!"}' "$WEBHOOK"
+
+      - name: PR comment
+        if: always() && github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: "Build: ${{ job.status }}. Coverage: zie artifact."
