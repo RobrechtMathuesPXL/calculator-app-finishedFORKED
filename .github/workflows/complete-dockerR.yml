@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           push: true
-          tags: YOUR_DOCKERHUB_USERNAME/YOUR_REPOSITORY_NAME:latest
+          tags: robrechtmathues/nodejs-demo-app:latest
         
       - name: Bundle code into zip
         run: zip -r build.zip .
