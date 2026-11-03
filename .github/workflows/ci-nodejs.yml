@@ -29,7 +29,7 @@ jobs:
         run: npm test
 
       - name: generatie van een test coverage rapport
-        run: npm run coverage
+        run: npx jest --coverage
 
       - name: artifact aanmaken met de test resultaten
         uses: actions/upload-artifact@v4
