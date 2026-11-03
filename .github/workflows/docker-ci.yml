@@ -1,0 +1,31 @@
+name: docker CI-node.js
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          repository: PXL-2TIN-DevOps-Resources/calculator-app-finished
+          
+      - name: node.js installatie
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: dependecies installeren
+        run: npm install
+
+      - name: uitvoering unit tests
+        run: npm test
+
+      - name: Docker image bouwen
+        run: docker build -t calculator-app .
+
+      - name: Docker image pushen
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/calculator-app:latest
