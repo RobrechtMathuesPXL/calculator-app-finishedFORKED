@@ -1,4 +1,4 @@
-name: CI-nodejs
+name: CI-node.js
 
 on:
     push:
